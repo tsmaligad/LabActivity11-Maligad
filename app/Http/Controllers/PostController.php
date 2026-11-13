@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use Illuminate\Support\Arr;
+
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -61,5 +64,50 @@ public function show($id)
 
     return view('posts.show', compact('post'));
 }
+
+
+public function create()
+{
+    abort_unless(auth()->user()->author()->exists(), 403);
+
+    $categories = [
+        'Announcement',
+        'Health',
+        'Peace & Order',
+        'Ayuda',
+        'Community Events',
+    ];
+
+    $tags = Tag::orderBy('name')->get();
+
+    return view('posts.create', compact('categories', 'tags'));
+}
+
+
+public function store(StorePostRequest $request)
+{
+    $data = $request->validated();
+
+    $isPublished = $request->boolean('is_published');
+
+    $post = $request->user()->author()
+        ->firstOrFail()
+        ->posts()
+        ->create([
+            ...Arr::except($data, ['tags', 'is_published']),
+            'is_published' => $isPublished,
+            'is_pinned' => false,
+            'published_at' => $isPublished ? now() : null,
+            'views' => 0,
+        ]);
+
+    $post->tags()->sync($data['tags']);
+
+    return redirect()
+        ->route('posts.index')
+        ->with('status', 'Post saved.');
+}
+
+
 
 }
