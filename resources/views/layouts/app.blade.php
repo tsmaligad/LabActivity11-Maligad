@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barangay Bulletin – Purok Maligad</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800">
 
@@ -33,6 +34,14 @@
                     <span class="text-sm text-gray-600">
                         Hi, {{ auth()->user()->name }}
                     </span>
+                    
+                    @if (auth()->user()->author()->exists())
+                    <a href="{{ route('posts.create') }}"
+                    class="bg-green-700 text-white px-4 py-2 rounded-lg font-semibold">
+                    New Post
+                </a>
+                @endif
+
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf

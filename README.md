@@ -1,122 +1,148 @@
-# Lab Activity 10 – Barangay Bulletin
 
-**Full-Stack Web Development**  
+# Lab Activity 11 – Barangay Bulletin
+
+Full-Stack Web Development  
 Ateneo de Davao University
 
 ## Project Description
 
-Barangay Bulletin – Purok Maligad is a Laravel-based web application developed for Barangay Matina Crossing in Davao City. The application allows residents to browse barangay announcements, search for posts by title, filter posts by category, and view individual announcements.
+Barangay Bulletin – Purok Maligad is a Laravel web application for Barangay Matina Crossing, Davao City. It allows residents to view barangay announcements, filter posts, and submit comments after logging in. Kagawads can also create and publish new announcements.
 
-The project demonstrates the use of Eloquent ORM, database migrations, factories, seeders, query builder filtering, pagination, and Blade with Tailwind CSS.
+This activity builds on Lab Activity 10 by adding Eloquent relationships, eager loading, manual authentication, and Form Request validation.
 
 ## Features
 
-- Published barangay announcements with pinned posts displayed first
-- Title search and category filtering
-- Individual post pages with view counters
-- Pagination with seven posts per page
-- Draft posts excluded from public listings
-- Responsive Blade and Tailwind CSS interface
-- SQLite database with Faker-generated sample records
+- Published announcements with pinned posts shown first
+- Search posts by title
+- Filter posts by category and tags
+- Pagination with 7 posts per page
+- Author profile pages showing posts and comments received
+- Login and logout for Kagawad and resident accounts
+- Comment submission for logged-in users
+- Post creation restricted to users with author profiles
+- Form Request validation with custom error messages
+- Eager loading to prevent N+1 queries
+- Responsive interface using Blade and Tailwind CSS
 
 ## Personalization
 
-- **Site Title:** Barangay Bulletin – Purok Maligad
-- **Personalized Author:** Kagawad Trixia Maligad
-- **Email:** kagawad.maligad@bulletin.test
-- **Posts Per Page:** 7, based on the seven letters in "Maligad"
-- **Custom Category:** Community Events
-- **Pinned Post:** Purok Maligad Clean-up Drive
-- **Birthday Post Date:** September 16, 2026 
+- Site: Barangay Bulletin – Purok Maligad
+- Barangay: Matina Crossing, Davao City
+- Author: Kagawad Trixia Maligad
+- Resident: Lola Maligad
+- Posts per page: 7
+- Pinned post: Purok Maligad Birthday Celebration
+- Birthday post date: September 16, 2026
 
-## Database Records
+## Seeded Login Accounts
 
-The database is populated using Laravel factories and seeders.
+| Account | Email | Password |
+|---|---|---|
+| Kagawad | kagawad.maligad@bulletin.test | bulletin2026 |
+| Resident | lola.maligad@bulletin.test | bulletin2026 |
 
-- 5 authors, including the manually created Kagawad
-- 40 published posts generated using Faker
-- 10 draft posts generated using the `draft()` factory state
-- 1 manually created pinned clean-up drive announcement
-- 51 posts in total
+Passwords are hashed in the database. These are development-only test accounts.
 
-## Installation and Setup
+## Tags
 
-**Requirements:** PHP compatible with the project's Composer dependencies, Composer, Node.js, npm, and SQLite support.
+The application uses five tags:
 
-1. Clone the repository:
+1. Purok Maligad
+2. Urgent
+3. Libre
+4. Schedule
+5. Community
 
-   ```bash
-   git clone https://github.com/tsmaligad/LabActivity10-Maligad.git
-   cd LabActivity10-Maligad
-   ```
+Posts are assigned tags using attach() and sync(). The pinned post has exactly Purok Maligad and Urgent.
 
-2. Install PHP dependencies:
+## Eloquent Relationships
 
-   ```bash
-   composer install
-   ```
+| Model | Relationship | Purpose |
+|---|---|---|
+| User → Author | hasOne | A user can have one author profile |
+| User → Comment | hasMany | A user can write multiple comments |
+| Author → User | belongsTo | An author profile belongs to a user |
+| Author → Post | hasMany | An author can write multiple posts |
+| Author → Comment | hasManyThrough | An author receives comments through their posts |
+| Post → Author | belongsTo | Each post belongs to an author |
+| Post → Comment | hasMany | Each post can have multiple comments |
+| Post → Tag | belongsToMany | A post can have multiple tags |
+| Comment → Post | belongsTo | Each comment belongs to a post |
+| Comment → User | belongsTo | Each comment belongs to a user |
+| Tag → Post | belongsToMany | A tag can be used by multiple posts |
 
-3. Copy the environment configuration:
+The post_tag pivot table connects posts and tags. The author comments relationship uses posts as the intermediate model.
 
-   **Windows PowerShell:**
-   ```powershell
-   Copy-Item .env.example .env
-   ```
+## Eager Loading
 
-   **macOS/Linux:**
-   ```bash
-   cp .env.example .env
-   ```
+The post index uses with() to load authors and tags, and withCount() to retrieve comment counts.
 
-4. Generate the application key:
+Individual post pages use load() to retrieve authors, tags, and commenters.
 
-   ```bash
-   php artisan key:generate
-   ```
+Lazy loading prevention is enabled during development through AppServiceProvider.
 
-5. Set `DB_CONNECTION=sqlite` in `.env` and create `database/database.sqlite` if it does not exist.
+## Form Validation
 
-6. Run migrations and seed the database:
+StoreCommentRequest checks that users are logged in and that comments contain 3–1000 characters.
 
-   ```bash
-   php artisan migrate:fresh --seed
-   ```
+StorePostRequest allows only users with an author profile to create posts. It validates the title, body, category, selected tags, and publication status.
 
-7. Install frontend dependencies:
+The forms show validation errors and retain previous input using old().
 
-   ```bash
-   npm install
-   ```
+## Installation
 
-8. Start the Vite development server:
+Clone the repository:
 
-   ```bash
-   npm run dev
-   ```
+```bash
+git clone https://github.com/tsmaligad/LabActivity11-Maligad.git
+cd LabActivity11-Maligad
+```
 
-9. In a separate terminal, start Laravel:
+Install dependencies:
 
-   ```bash
-   php artisan serve
-   ```
+```bash
+composer install
+npm install
+```
 
-10. Open `/posts` in your browser.
+Create the environment file:
 
-## Database and Eloquent Verification
+```powershell
+Copy-Item .env.example .env
+```
 
-The project includes reversible migrations, a separate migration for the post view counter, and Eloquent models with explicitly defined fillable attributes.
+Generate the application key:
 
-The required ActiveRecord demonstration uses `Post::find()`, modifies a post's title, saves it with `save()`, and retrieves the updated value.
+```bash
+php artisan key:generate
+```
 
-Evidence: `docs/tinker.png`
+Set DB_CONNECTION=sqlite in .env and create database/database.sqlite if it does not exist.
 
-## Technologies Used
+Run migrations and seed the database:
 
-- Laravel
-- PHP
-- SQLite
-- Eloquent ORM
-- Blade
-- Tailwind CSS
-- Vite
-- Faker
+```bash
+php artisan migrate:fresh --seed
+```
+
+Start the Laravel server:
+
+```bash
+php artisan serve
+```
+
+Start Vite in another terminal:
+
+```bash
+npm run dev
+```
+
+For Windows PowerShell, npm.cmd run dev can be used if npm.ps1 is blocked.
+
+Open http://127.0.0.1:8000/posts in your browser.
+
+## Testing
+
+The application was tested for login, comment submission, form validation, author-only post creation, tag filtering, and relationship loading.
+
+The seeded accounts allow testing of the difference between Kagawad and resident permissions.
