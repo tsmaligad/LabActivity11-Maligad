@@ -36,12 +36,11 @@
                     </span>
                     
                     @if (auth()->user()->author()->exists())
-                    <a href="{{ route('posts.create') }}"
-                    class="bg-green-700 text-white px-4 py-2 rounded-lg font-semibold">
-                    New Post
-                </a>
-                @endif
-
+                       <a href="{{ route('posts.create') }}"
+                        class="bg-green-700 text-white px-4 py-2 rounded-lg font-semibold">
+                          New Post
+                       </a>
+                     @endif
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf

@@ -97,10 +97,11 @@
                 @enderror
 
                 @foreach ($errors->get('tags.*') as $message)
-    <p class="text-red-600 text-sm mt-1">
-        {{ $message }}
-    </p>
-@endforeach
+                    <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                    </p>
+                @endforeach
+
             </fieldset>
 
             <div class="mb-6">
