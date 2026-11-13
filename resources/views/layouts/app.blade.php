@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +19,39 @@
             </p>
         </div>
     </header>
+
+    <nav class="bg-white border-b shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+
+            <a href="{{ route('posts.index') }}"
+               class="text-green-800 font-semibold">
+                Home
+            </a>
+
+            <div class="flex items-center gap-4">
+                @auth
+                    <span class="text-sm text-gray-600">
+                        Hi, {{ auth()->user()->name }}
+                    </span>
+
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+
+                        <button type="submit"
+                                class="text-red-600 font-semibold">
+                            Logout
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}"
+                       class="text-green-700 font-semibold">
+                        Sign In
+                    </a>
+                @endauth
+            </div>
+
+        </div>
+    </nav>
 
     <main class="max-w-5xl mx-auto px-4 py-8">
         @yield('content')
