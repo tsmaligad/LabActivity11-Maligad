@@ -31,9 +31,9 @@ class PostSeeder extends Seeder
 
         Post::create([
             'author_id' => $kagawad->id,
-            'title' => 'Purok Maligad Clean-up Drive',
+            'title' => 'Purok Maligad Birthday Celebration',
             'category' => 'Announcement',
-            'body' => 'Residents of Purok Maligad are invited to participate in a community clean-up drive to help maintain a clean and safe neighborhood.',
+            'body' => 'Happy birthday to all Purok Maligad residents celebrating this month! Wishing everyone happiness, good health, and a wonderful celebration with family and friends.',
             'is_published' => true,
             'is_pinned' => true,
             'published_at' => '2026-09-16',
